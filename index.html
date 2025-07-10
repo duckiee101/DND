@@ -1,27 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>D&D Encounter Generator</title>
-  <!-- ✅ Correct Puter.js script -->
+  <title>AI Dungeon Master</title>
   <script src="https://js.puter.com/v2/"></script>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      background: #f3f1e7;
+      padding: 2rem;
+      color: #2b261f;
+    }
+    textarea, button {
+      width: 100%;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    pre {
+      background: #fff;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  <h2>AI Dungeon Master</h2>
-  <textarea id="prompt" placeholder="Describe your encounter..."></textarea>
-  <button onclick="generate()">Generate</button>
-  <pre id="output"></pre>
+  <h2>🎲 AI Dungeon Master</h2>
+  <textarea id="prompt" placeholder="Describe your adventure, or leave blank to auto-generate..."></textarea>
+  <button onclick="generate()">Start Campaign</button>
+  <pre id="output">Awaiting your adventure...</pre>
 
-  <!-- ✅ Custom AI interaction script -->
   <script>
     async function generate() {
-      const userPrompt = document.getElementById("prompt").value;
+      const userPrompt = document.getElementById("prompt").value || "Create a level 1 quest using Dungeon Master's Guide lore.";
       try {
+        // Load lore from GitHub Pages-hosted JSON
+        const loreResponse = await fetch("dndLore.json");
+        const lore = await loreResponse.json();
+
+        // Build context-rich prompt
+        const fullPrompt = `
+You are a Dungeon Master AI. Use the following extracted lore to guide your response.
+
+DM Roles: ${lore.dmRoles.join(", ")}
+Player Styles: ${Object.entries(lore.playerStyles).map(([style, traits]) => `${style}: ${traits.join(", ")}`).join(" | ")}
+World Building: ${Object.entries(lore.worldBuilding).map(([key, value]) => `${key}: ${value}`).join(", ")}
+
+Start an immersive campaign now:
+${userPrompt}
+        `.trim();
+
+        // Call Puter.js
         const response = await puter.ai.chat([
-          { role: "user", content: userPrompt }
+          { role: "user", content: fullPrompt }
         ]);
+
         document.getElementById("output").textContent = response;
       } catch (error) {
-        document.getElementById("output").textContent = "Error generating response: " + error.message;
+        document.getElementById("output").textContent = "⚠️ Error: " + error.message;
       }
     }
   </script>
