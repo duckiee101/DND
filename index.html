@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Uncial Antiqua', 'MedievalSharp', serif;
-      background: url('https://i.pinimg.com/originals/95/61/7d/95617df735cb077e4963eacc026ad6b5.png') no-repeat center center fixed;
+      background: url('https://i.imgur.com/0Zz1bXG.jpg') no-repeat center center fixed;
       background-size: cover;
       color: #2b261f;
       padding: 2rem;
@@ -25,14 +25,14 @@
     }
 
     .input-container {
-      background: rgba(255, 248, 220, 0.9);
+      background: rgba(255, 248, 220, 0.95);
       border: 2px solid #8b5a2b;
       padding: 1rem;
       border-radius: 12px;
       margin-bottom: 1rem;
     }
 
-    textarea, select {
+    textarea, select, input {
       width: 100%;
       font-size: 1rem;
       padding: 0.5rem;
@@ -94,7 +94,42 @@
   </style>
 </head>
 <body>
-  <h2>📜 AI Dungeon Master</h2>
+  <h2>🧙‍♂️ AI Dungeon Master</h2>
+
+  <div class="input-container">
+    <h3>🎨 Create Your Character</h3>
+    <input type="text" id="charName" placeholder="Name" />
+    <select id="charRace">
+      <option value="Human">Human</option>
+      <option value="Elf">Elf</option>
+      <option value="Dwarf">Dwarf</option>
+      <option value="Halfling">Halfling</option>
+      <option value="Tiefling">Tiefling</option>
+      <option value="Dragonborn">Dragonborn</option>
+    </select>
+    <select id="charClass">
+      <option value="Fighter">Fighter</option>
+      <option value="Wizard">Wizard</option>
+      <option value="Rogue">Rogue</option>
+      <option value="Cleric">Cleric</option>
+      <option value="Barbarian">Barbarian</option>
+      <option value="Bard">Bard</option>
+    </select>
+    <select id="charAlign">
+      <option value="Lawful Good">Lawful Good</option>
+      <option value="Neutral Good">Neutral Good</option>
+      <option value="Chaotic Good">Chaotic Good</option>
+      <option value="Lawful Neutral">Lawful Neutral</option>
+      <option value="True Neutral">True Neutral</option>
+      <option value="Chaotic Neutral">Chaotic Neutral</option>
+      <option value="Lawful Evil">Lawful Evil</option>
+      <option value="Neutral Evil">Neutral Evil</option>
+      <option value="Chaotic Evil">Chaotic Evil</option>
+    </select>
+    <button onclick="rollStats()">🎲 Roll Stats</button>
+    <button onclick="saveCharacter()">✅ Save Character</button>
+    <div class="stats" id="charPreview" style="display:none;"></div>
+  </div>
 
   <div class="input-container">
     <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
@@ -117,23 +152,45 @@
 
   <script>
     const memoryLog = [];
-    const characterSheet = {
-      name: "Thorne",
-      race: "Half-Orc",
-      class: "Barbarian",
-      level: 3,
-      hp: 38,
-      ac: 15,
-      stats: {
-        strength: 18,
-        dexterity: 14,
-        constitution: 16,
-        intelligence: 8,
-        wisdom: 12,
-        charisma: 10
-      },
-      inventory: ["Greataxe", "Javelin x3", "Healing Potion"]
-    };
+    let activeCharacter = JSON.parse(localStorage.getItem("playerCharacter")) || {};
+
+    function rollStats() {
+      const roll = () => {
+        let rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
+        rolls.sort((a, b) => b - a);
+        return rolls.slice(0, 3).reduce((a, b) => a + b, 0);
+      };
+
+      activeCharacter.stats = {
+        strength: roll(),
+        dexterity: roll(),
+        constitution: roll(),
+        intelligence: roll(),
+        wisdom: roll(),
+        charisma: roll()
+      };
+
+      document.getElementById("charPreview").innerHTML = `
+        <strong>Stats Rolled:</strong><br>
+        Strength: ${activeCharacter.stats.strength}<br>
+        Dexterity: ${activeCharacter.stats.dexterity}<br>
+        Constitution: ${activeCharacter.stats.constitution}<br>
+        Intelligence: ${activeCharacter.stats.intelligence}<br>
+        Wisdom: ${activeCharacter.stats.wisdom}<br>
+        Charisma: ${activeCharacter.stats.charisma}
+      `;
+      document.getElementById("charPreview").style.display = "block";
+    }
+
+    function saveCharacter() {
+      activeCharacter.name = document.getElementById("charName").value;
+      activeCharacter.race = document.getElementById("charRace").value;
+      activeCharacter.class = document.getElementById("charClass").value;
+      activeCharacter.alignment = document.getElementById("charAlign").value;
+
+      localStorage.setItem("playerCharacter", JSON.stringify(activeCharacter));
+      alert(`Character ${activeCharacter.name} saved! You are now playing as a ${activeCharacter.race} ${activeCharacter.class}.`);
+    }
 
     async function generate() {
       const userInput = document.getElementById("prompt").value;
@@ -152,65 +209,4 @@
         };
       }
 
-      if (userInput) memoryLog.push(`Player: ${userInput}`);
-      const memoryContext = memoryLog.slice(-6).join("\n");
-
-      const prompt = `
-You are a Dungeon Master AI and a master storyteller. Use the following lore to guide the campaign:
-DM Roles: ${lore.dmRoles.join(", ")}
-Player Styles: ${Object.entries(lore.playerStyles).map(([style, traits]) => `${style}: ${traits.join(", ")}`).join(" | ")}
-World Building: ${Object.entries(lore.worldBuilding).map(([key, value]) => `${key}: ${value}`).join(", ")}
-
-Maintain continuity and respond with emotional depth. Use vivid descriptions, character dialogue, dramatic pacing, and evolving consequences. Build upon previous events.
-
-${memoryContext}
-
-${userInput ? `Player action: ${userInput}` : "Begin a new campaign in a haunted forest near a forgotten ruin. Introduce NPCs, describe the setting, and offer choices."}
-      `.trim();
-
-      try {
-        const response = await puter.ai.chat([{ role: "user", content: prompt }]);
-        memoryLog.push(`DM: ${response}`);
-        document.getElementById("output").textContent += `\n\n${response}`;
-        document.getElementById("prompt").value = "";
-        document.getElementById("output").scrollTop = document.getElementById("output").scrollHeight;
-      } catch (error) {
-        console.error("Puter chat failed:", error);
-        document.getElementById("output").textContent += "\n⚠️ AI generation error: " + error.message;
-      }
-    }
-
-    function rollDice() {
-      const diceType = parseInt(document.getElementById("diceType").value);
-      const roll = Math.floor(Math.random() * diceType) + 1;
-      const output = document.getElementById("output");
-      output.classList.remove("dice-animation");
-      void output.offsetWidth; // trigger reflow
-      output.classList.add("dice-animation");
-      output.textContent += `\n\n🎲 You rolled a d${diceType}: ${roll}`;
-    }
-
-    function showStats() {
-      const sheet = characterSheet;
-      const statsDiv = document.getElementById("stats");
-      statsDiv.innerHTML = `
-        <strong>Name:</strong> ${sheet.name}<br>
-        <strong>Race:</strong> ${sheet.race}<br>
-        <strong>Class:</strong> ${sheet.class}<br>
-        <strong>Level:</strong> ${sheet.level}<br>
-        <strong>HP:</strong> ${sheet.hp}<br>
-        <strong>AC:</strong> ${sheet.ac}<br>
-        <strong>Stats:</strong><br>
-        Strength: ${sheet.stats.strength}<br>
-        Dexterity: ${sheet.stats.dexterity}<br>
-        Constitution: ${sheet.stats.constitution}<br>
-        Intelligence: ${sheet.stats.intelligence}<br>
-        Wisdom: ${sheet.stats.wisdom}<br>
-        Charisma: ${sheet.stats.charisma}<br>
-        <strong>Inventory:</strong> ${sheet.inventory.join(", ")}
-      `;
-      statsDiv.style.display = "block";
-    }
-  </script>
-</body>
-</html>
+      if (userInput) memoryLog.push(`Player:
