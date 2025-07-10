@@ -68,6 +68,37 @@ function showStats() {
   statsDiv.style.display = "block";
 }
 
+function saveCampaign() {
+  const campaignData = {
+    character: activeCharacter,
+    memoryLog,
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    localStorage.setItem("campaignSave", JSON.stringify(campaignData));
+    alert("Campaign saved successfully!");
+  } catch (err) {
+    console.error("Save failed:", err);
+    alert("⚠️ Save failed. Check storage permissions.");
+  }
+}
+
+function loadCampaign() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("campaignSave"));
+    if (!saved) return alert("No saved campaign found.");
+
+    activeCharacter = saved.character;
+    memoryLog = saved.memoryLog || [];
+    document.getElementById("output").textContent = `📂 Campaign loaded from ${saved.timestamp}\n\n`;
+    showStats();
+  } catch (err) {
+    console.error("Load failed:", err);
+    alert("⚠️ Load failed. Check saved data format.");
+  }
+}
+
 async function generate() {
   const userInput = document.getElementById("prompt").value;
   const output = document.getElementById("output");
