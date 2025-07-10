@@ -49,39 +49,4 @@
   <h2>📖 AI Storyteller Dungeon Master</h2>
 
   <div class="input-container">
-    <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
-    <button onclick="generate()">Start / Continue</button>
-  </div>
-
-  <pre id="output">Awaiting your adventure...</pre>
-
-  <script>
-    async function generate() {
-      const userInput = document.getElementById("prompt").value;
-
-      try {
-        const loreResponse = await fetch("dndLore.json");
-        const lore = await loreResponse.json();
-
-        const prompt = `
-You are a Dungeon Master AI and a master storyteller. Use the following lore to guide the campaign:
-DM Roles: ${lore.dmRoles.join(", ")}
-Player Styles: ${Object.entries(lore.playerStyles).map(([style, traits]) => `${style}: ${traits.join(", ")}`).join(" | ")}
-World Building: ${Object.entries(lore.worldBuilding).map(([key, value]) => `${key}: ${value}`).join(", ")}
-
-Your goal is to create a vivid, emotionally engaging story. Use rich descriptions, character dialogue, and dramatic pacing. Respond to the player’s actions with consequences, twists, and evolving plot threads.
-
-${userInput ? `Player action: ${userInput}` : "Begin a new campaign in a haunted forest near a forgotten ruin. Introduce NPCs, describe the setting, and offer choices."}
-        `.trim();
-
-        const response = await puter.ai.chat([{ role: "user", content: prompt }]);
-        document.getElementById("output").textContent += `\n\n${response}`;
-        document.getElementById("prompt").value = "";
-        document.getElementById("output").scrollTop = document.getElementById("output").scrollHeight;
-      } catch (error) {
-        document.getElementById("output").textContent += "\n⚠️ Error: " + error.message;
-      }
-    }
-  </script>
-</body>
-</html>
+    <textarea id="prompt" placeholder="Type your action or leave blank to begin a
