@@ -1,26 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Puter.js Test</title>
+  <title>AI Dungeon Master</title>
   <script src="https://js.puter.com/v2/"></script>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      background: #f3f1e7;
+      padding: 2rem;
+      color: #2b261f;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .input-container {
+      margin-bottom: 1rem;
+    }
+
+    textarea {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.5rem;
+      resize: vertical;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      background-color: #382f2b;
+      color: #f3f1e7;
+      border: none;
+    }
+
+    pre {
+      flex-grow: 1;
+      overflow-y: auto;
+      background: #fff;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  <h2>🧪 Puter.js AI Test</h2>
-  <button onclick="testPuter()">Run Test</button>
-  <pre id="output">Waiting for response...</pre>
+  <h2>📖 AI Storyteller Dungeon Master</h2>
 
-  <script>
-    async function testPuter() {
-      document.getElementById("output").textContent = "⏳ Testing Puter.js...";
-      try {
-        const response = await puter.ai.chat("Say hello like a Dungeon Master.");
-        document.getElementById("output").textContent = "✅ Response:\n\n" + response;
-        console.log("Puter response:", response);
-      } catch (error) {
-        document.getElementById("output").textContent = "❌ Error: " + error.message;
-        console.error("Puter.js error:", error);
-      }
-    }
-  </script>
-</body>
-</html>
+  <div class="input-container">
+    <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
