@@ -3,49 +3,86 @@
 <head>
   <title>AI Dungeon Master</title>
   <script src="https://js.puter.com/v2/"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=MedievalSharp&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Georgia, serif;
-      background: #f3f1e7;
-      padding: 2rem;
+      font-family: 'Uncial Antiqua', 'MedievalSharp', serif;
+      background: url('https://i.imgur.com/0Zz1bXG.jpg') no-repeat center center fixed;
+      background-size: cover;
       color: #2b261f;
+      padding: 2rem;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
+
+    h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #4b2e1e;
+      text-shadow: 1px 1px #e0cba3;
+    }
+
     .input-container {
+      background: rgba(255, 248, 220, 0.9);
+      border: 2px solid #8b5a2b;
+      padding: 1rem;
+      border-radius: 12px;
       margin-bottom: 1rem;
     }
-    textarea, button {
+
+    textarea {
       width: 100%;
       font-size: 1rem;
       padding: 0.5rem;
+      resize: vertical;
+      border: 1px solid #8b5a2b;
+      background-color: #fffaf0;
+      font-family: 'MedievalSharp', serif;
     }
+
     button {
-      background-color: #382f2b;
-      color: #f3f1e7;
-      border: none;
-      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
       margin-top: 0.5rem;
+      margin-right: 0.5rem;
+      cursor: pointer;
+      background-color: #8b5a2b;
+      color: #fffaf0;
+      border: none;
+      border-radius: 8px;
+      font-family: 'MedievalSharp', serif;
+      box-shadow: 2px 2px #4b2e1e;
     }
+
+    button:hover {
+      background-color: #a0522d;
+    }
+
     pre {
       flex-grow: 1;
       overflow-y: auto;
-      background: #fff;
+      background: rgba(255, 248, 220, 0.95);
       padding: 1rem;
-      border: 1px solid #ccc;
+      border: 2px solid #8b5a2b;
+      border-radius: 12px;
       white-space: pre-wrap;
+      font-family: 'MedievalSharp', serif;
     }
+
     .stats {
-      background: #fff;
-      border: 1px solid #ccc;
+      background: rgba(255, 248, 220, 0.95);
+      border: 2px solid #8b5a2b;
       padding: 1rem;
+      border-radius: 12px;
       margin-top: 1rem;
+      font-family: 'MedievalSharp', serif;
     }
   </style>
 </head>
 <body>
-  <h2>📖 AI Storyteller Dungeon Master</h2>
+  <h2>📜 AI Dungeon Master</h2>
 
   <div class="input-container">
     <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
