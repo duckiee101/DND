@@ -50,3 +50,58 @@
 
   <div class="input-container">
     <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
+    <button onclick="generate()">Start / Continue</button>
+  </div>
+
+  <pre id="output">Awaiting your adventure...</pre>
+
+  <script>
+    const memoryLog = [];
+
+    async function generate() {
+      const userInput = document.getElementById("prompt").value;
+      let lore = {};
+
+      try {
+        const loreResponse = await fetch("dndLore.json");
+        if (!loreResponse.ok) throw new Error("Failed to load dndLore.json");
+        lore = await loreResponse.json();
+      } catch (error) {
+        console.warn("Lore loading failed:", error);
+        lore = {
+          dmRoles: ["storyteller", "referee"],
+          playerStyles: { acting: ["roleplay"], fighting: ["combat"] },
+          worldBuilding: { multiverse: true, npcMemory: true }
+        };
+      }
+
+      if (userInput) memoryLog.push(`Player: ${userInput}`);
+      const memoryContext = memoryLog.slice(-6).join("\n");
+
+      const prompt = `
+You are a Dungeon Master AI and a master storyteller. Use the following lore to guide the campaign:
+DM Roles: ${lore.dmRoles.join(", ")}
+Player Styles: ${Object.entries(lore.playerStyles).map(([style, traits]) => `${style}: ${traits.join(", ")}`).join(" | ")}
+World Building: ${Object.entries(lore.worldBuilding).map(([key, value]) => `${key}: ${value}`).join(", ")}
+
+Maintain continuity and respond with emotional depth. Use vivid descriptions, character dialogue, dramatic pacing, and evolving consequences. Build upon previous events.
+
+${memoryContext}
+
+${userInput ? `Player action: ${userInput}` : "Begin a new campaign in a haunted forest near a forgotten ruin. Introduce NPCs, describe the setting, and offer choices."}
+      `.trim();
+
+      try {
+        const response = await puter.ai.chat([{ role: "user", content: prompt }]);
+        memoryLog.push(`DM: ${response}`);
+        document.getElementById("output").textContent += `\n\n${response}`;
+        document.getElementById("prompt").value = "";
+        document.getElementById("output").scrollTop = document.getElementById("output").scrollHeight;
+      } catch (error) {
+        console.error("Puter chat failed:", error);
+        document.getElementById("output").textContent += "\n⚠️ AI generation error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
