@@ -11,33 +11,9 @@
   <div class="input-container">
     <h3>🎨 Create Your Character</h3>
     <input type="text" id="charName" placeholder="Name" />
-    <select id="charRace">
-      <option value="Human">Human</option>
-      <option value="Elf">Elf</option>
-      <option value="Dwarf">Dwarf</option>
-      <option value="Halfling">Halfling</option>
-      <option value="Tiefling">Tiefling</option>
-      <option value="Dragonborn">Dragonborn</option>
-    </select>
-    <select id="charClass">
-      <option value="Fighter">Fighter</option>
-      <option value="Wizard">Wizard</option>
-      <option value="Rogue">Rogue</option>
-      <option value="Cleric">Cleric</option>
-      <option value="Barbarian">Barbarian</option>
-      <option value="Bard">Bard</option>
-    </select>
-    <select id="charAlign">
-      <option value="Lawful Good">Lawful Good</option>
-      <option value="Neutral Good">Neutral Good</option>
-      <option value="Chaotic Good">Chaotic Good</option>
-      <option value="Lawful Neutral">Lawful Neutral</option>
-      <option value="True Neutral">True Neutral</option>
-      <option value="Chaotic Neutral">Chaotic Neutral</option>
-      <option value="Lawful Evil">Lawful Evil</option>
-      <option value="Neutral Evil">Neutral Evil</option>
-      <option value="Chaotic Evil">Chaotic Evil</option>
-    </select>
+    <select id="charRace"> ... </select>
+    <select id="charClass"> ... </select>
+    <select id="charAlign"> ... </select>
     <button onclick="rollStats()">🎲 Roll Stats</button>
     <button onclick="saveCharacter()">✅ Save Character</button>
     <div class="stats" id="charPreview" style="display:none;"></div>
@@ -45,15 +21,7 @@
 
   <div class="input-container">
     <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
-    <select id="diceType">
-      <option value="4">d4</option>
-      <option value="6">d6</option>
-      <option value="8">d8</option>
-      <option value="10">d10</option>
-      <option value="12">d12</option>
-      <option value="20" selected>d20</option>
-      <option value="100">d100</option>
-    </select>
+    <select id="diceType"> ... </select>
     <button onclick="generate()">Start / Continue</button>
     <button onclick="rollDice()">🎲 Roll Dice</button>
     <button onclick="showStats()">📜 Show Character Sheet</button>
