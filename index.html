@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>D&D Encounter Generator</title>
+  <!-- ✅ Correct Puter.js script -->
   <script src="https://js.puter.com/v2/"></script>
 </head>
 <body>
@@ -10,13 +11,18 @@
   <button onclick="generate()">Generate</button>
   <pre id="output"></pre>
 
+  <!-- ✅ Custom AI interaction script -->
   <script>
     async function generate() {
       const userPrompt = document.getElementById("prompt").value;
-      const response = await puter.ai.chat([
-        { role: "user", content: userPrompt }
-      ]);
-      document.getElementById("output").textContent = response;
+      try {
+        const response = await puter.ai.chat([
+          { role: "user", content: userPrompt }
+        ]);
+        document.getElementById("output").textContent = response;
+      } catch (error) {
+        document.getElementById("output").textContent = "Error generating response: " + error.message;
+      }
     }
   </script>
 </body>
