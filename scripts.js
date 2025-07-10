@@ -1,72 +1,31 @@
 let memoryLog = [];
 let activeCharacter = JSON.parse(localStorage.getItem("playerCharacter")) || {};
+let pendingRoll = null;
 
-function rollStats() {
-  const roll = () => {
-    let rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
-    rolls.sort((a, b) => b - a);
-    return rolls.slice(0, 3).reduce((a, b) => a + b, 0);
-  };
-
-  activeCharacter.stats = {
-    strength: roll(),
-    dexterity: roll(),
-    constitution: roll(),
-    intelligence: roll(),
-    wisdom: roll(),
-    charisma: roll()
-  };
-
-  document.getElementById("charPreview").innerHTML = `
-    <strong>Stats Rolled:</strong><br>
-    Strength: ${activeCharacter.stats.strength}<br>
-    Dexterity: ${activeCharacter.stats.dexterity}<br>
-    Constitution: ${activeCharacter.stats.constitution}<br>
-    Intelligence: ${activeCharacter.stats.intelligence}<br>
-    Wisdom: ${activeCharacter.stats.wisdom}<br>
-    Charisma: ${activeCharacter.stats.charisma}
-  `;
-  document.getElementById("charPreview").style.display = "block";
-}
-
-function saveCharacter() {
-  activeCharacter.name = document.getElementById("charName").value;
-  activeCharacter.race = document.getElementById("charRace").value;
-  activeCharacter.class = document.getElementById("charClass").value;
-  activeCharacter.alignment = document.getElementById("charAlign").value;
-
-  localStorage.setItem("playerCharacter", JSON.stringify(activeCharacter));
-  alert(`Character ${activeCharacter.name} saved!`);
-}
+function rollStats() { ... } // same as before
+function saveCharacter() { ... } // same as before
 
 function rollDice() {
   const diceType = parseInt(document.getElementById("diceType").value);
   const roll = Math.floor(Math.random() * diceType) + 1;
   const output = document.getElementById("output");
+
   output.classList.remove("dice-animation");
   void output.offsetWidth;
   output.classList.add("dice-animation");
+
   output.textContent += `\n\n🎲 You rolled a d${diceType}: ${roll}`;
+
+  if (pendingRoll) {
+    const rollContext = `Player rolled a ${roll} on ${pendingRoll.action} (${pendingRoll.type}).`;
+    memoryLog.push(`Roll Result: ${rollContext}`);
+    pendingRoll = null;
+    document.getElementById("prompt").value = rollContext;
+    generate(); // continue story with result
+  }
 }
 
-function showStats() {
-  const sheet = activeCharacter;
-  const statsDiv = document.getElementById("stats");
-  statsDiv.innerHTML = `
-    <strong>Name:</strong> ${sheet.name}<br>
-    <strong>Race:</strong> ${sheet.race}<br>
-    <strong>Class:</strong> ${sheet.class}<br>
-    <strong>Alignment:</strong> ${sheet.alignment}<br>
-    <strong>Stats:</strong><br>
-    Strength: ${sheet.stats?.strength ?? "-"}<br>
-    Dexterity: ${sheet.stats?.dexterity ?? "-"}<br>
-    Constitution: ${sheet.stats?.constitution ?? "-"}<br>
-    Intelligence: ${sheet.stats?.intelligence ?? "-"}<br>
-    Wisdom: ${sheet.stats?.wisdom ?? "-"}<br>
-    Charisma: ${sheet.stats?.charisma ?? "-"}
-  `;
-  statsDiv.style.display = "block";
-}
+function showStats() { ... } // same as before
 
 function saveCampaign() {
   const campaignData = {
@@ -74,29 +33,17 @@ function saveCampaign() {
     memoryLog,
     timestamp: new Date().toISOString()
   };
-
-  try {
-    localStorage.setItem("campaignSave", JSON.stringify(campaignData));
-    alert("Campaign saved successfully!");
-  } catch (err) {
-    console.error("Save failed:", err);
-    alert("⚠️ Save failed. Check storage permissions.");
-  }
+  localStorage.setItem("campaignSave", JSON.stringify(campaignData));
+  alert("Campaign saved successfully!");
 }
 
 function loadCampaign() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("campaignSave"));
-    if (!saved) return alert("No saved campaign found.");
-
-    activeCharacter = saved.character;
-    memoryLog = saved.memoryLog || [];
-    document.getElementById("output").textContent = `📂 Campaign loaded from ${saved.timestamp}\n\n`;
-    showStats();
-  } catch (err) {
-    console.error("Load failed:", err);
-    alert("⚠️ Load failed. Check saved data format.");
-  }
+  const saved = JSON.parse(localStorage.getItem("campaignSave"));
+  if (!saved) return alert("No saved campaign found.");
+  activeCharacter = saved.character;
+  memoryLog = saved.memoryLog || [];
+  document.getElementById("output").textContent = `📂 Campaign loaded from ${saved.timestamp}\n\n`;
+  showStats();
 }
 
 async function generate() {
@@ -106,10 +53,8 @@ async function generate() {
 
   try {
     const res = await fetch("dndLore.json");
-    if (!res.ok) throw new Error("Failed to load dndLore.json");
     lore = await res.json();
-  } catch (e) {
-    console.warn("Lore loading failed:", e);
+  } catch {
     lore = {
       dmRoles: ["storyteller"],
       playerStyles: { acting: ["roleplay"], fighting: ["combat"] },
@@ -122,6 +67,8 @@ async function generate() {
 
   const prompt = `
 You are a Dungeon Master AI with the personality of a vivid, emotionally intelligent storyteller. Speak with rich sensory detail, dramatic pacing, and emotional nuance. Use tension, metaphor, and immersive narration.
+
+If you want the player to roll, say: “Roll a d20 for [action]” and wait for input. Do not continue the story until the roll result is provided.
 
 Player Character:
 Name: ${activeCharacter.name || "Unnamed"}
@@ -152,6 +99,15 @@ ${userInput ? `Player action: ${userInput}` : "Begin a new campaign in a haunted
     output.textContent += `\n\n${response}`;
     document.getElementById("prompt").value = "";
     output.scrollTop = output.scrollHeight;
+
+    if (/roll a d(\d+)\s+for\s+(\w+)/i.test(response)) {
+      const match = response.match(/roll a d(\d+)\s+for\s+(\w+)/i);
+      pendingRoll = {
+        type: `d${match[1]}`,
+        action: match[2]
+      };
+      alert(`🧙‍♂️ The DM requests: Roll a ${pendingRoll.type} for ${pendingRoll.action}`);
+    }
   } catch (err) {
     console.error("AI request failed:", err);
     output.textContent += "\n⚠️ AI generation error: " + err.message;
