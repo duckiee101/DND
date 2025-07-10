@@ -13,28 +13,21 @@
       flex-direction: column;
       min-height: 100vh;
     }
-
     .input-container {
       margin-bottom: 1rem;
     }
-
-    textarea {
+    textarea, button {
       width: 100%;
       font-size: 1rem;
       padding: 0.5rem;
-      resize: vertical;
     }
-
     button {
-      font-size: 1rem;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      cursor: pointer;
       background-color: #382f2b;
       color: #f3f1e7;
       border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
     }
-
     pre {
       flex-grow: 1;
       overflow-y: auto;
@@ -47,6 +40,31 @@
 </head>
 <body>
   <h2>📖 AI Storyteller Dungeon Master</h2>
-
   <div class="input-container">
-    <textarea id="prompt" placeholder="Type your action or leave blank to begin a
+    <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
+    <button onclick="generate()">Start / Continue</button>
+  </div>
+  <pre id="output">Awaiting your adventure...</pre>
+
+  <script>
+    const memoryLog = [];
+
+    async function generate() {
+      const userInput = document.getElementById("prompt").value;
+      let lore = {};
+
+      try {
+        const response = await fetch("dndLore.json");
+        if (!response.ok) throw new Error("Failed to load dndLore.json");
+        lore = await response.json();
+      } catch (error) {
+        console.warn("Lore loading failed:", error);
+        lore = {
+          dmRoles: ["storyteller", "referee"],
+          playerStyles: { acting: ["roleplay"], fighting: ["combat"] },
+          worldBuilding: { multiverse: true, npcMemory: true }
+        };
+      }
+
+      if (userInput) memoryLog.push(`Player: ${userInput}`);
+      const memoryContext
