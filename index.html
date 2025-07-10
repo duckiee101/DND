@@ -13,28 +13,21 @@
       flex-direction: column;
       min-height: 100vh;
     }
-
     .input-container {
       margin-bottom: 1rem;
     }
-
-    textarea {
+    textarea, button {
       width: 100%;
       font-size: 1rem;
       padding: 0.5rem;
-      resize: vertical;
     }
-
     button {
-      font-size: 1rem;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      cursor: pointer;
       background-color: #382f2b;
       color: #f3f1e7;
       border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
     }
-
     pre {
       flex-grow: 1;
       overflow-y: auto;
@@ -42,6 +35,12 @@
       padding: 1rem;
       border: 1px solid #ccc;
       white-space: pre-wrap;
+    }
+    .stats {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -51,12 +50,32 @@
   <div class="input-container">
     <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
     <button onclick="generate()">Start / Continue</button>
+    <button onclick="rollDice()">🎲 Roll Dice</button>
+    <button onclick="showStats()">📜 Show Character Sheet</button>
   </div>
 
   <pre id="output">Awaiting your adventure...</pre>
+  <div class="stats" id="stats" style="display:none;"></div>
 
   <script>
     const memoryLog = [];
+    const characterSheet = {
+      name: "Thorne",
+      race: "Half-Orc",
+      class: "Barbarian",
+      level: 3,
+      hp: 38,
+      ac: 15,
+      stats: {
+        strength: 18,
+        dexterity: 14,
+        constitution: 16,
+        intelligence: 8,
+        wisdom: 12,
+        charisma: 10
+      },
+      inventory: ["Greataxe", "Javelin x3", "Healing Potion"]
+    };
 
     async function generate() {
       const userInput = document.getElementById("prompt").value;
@@ -101,6 +120,33 @@ ${userInput ? `Player action: ${userInput}` : "Begin a new campaign in a haunted
         console.error("Puter chat failed:", error);
         document.getElementById("output").textContent += "\n⚠️ AI generation error: " + error.message;
       }
+    }
+
+    function rollDice() {
+      const roll = Math.floor(Math.random() * 20) + 1;
+      document.getElementById("output").textContent += `\n\n🎲 You rolled a d20: ${roll}`;
+    }
+
+    function showStats() {
+      const sheet = characterSheet;
+      const statsDiv = document.getElementById("stats");
+      statsDiv.innerHTML = `
+        <strong>Name:</strong> ${sheet.name}<br>
+        <strong>Race:</strong> ${sheet.race}<br>
+        <strong>Class:</strong> ${sheet.class}<br>
+        <strong>Level:</strong> ${sheet.level}<br>
+        <strong>HP:</strong> ${sheet.hp}<br>
+        <strong>AC:</strong> ${sheet.ac}<br>
+        <strong>Stats:</strong><br>
+        Strength: ${sheet.stats.strength}<br>
+        Dexterity: ${sheet.stats.dexterity}<br>
+        Constitution: ${sheet.stats.constitution}<br>
+        Intelligence: ${sheet.stats.intelligence}<br>
+        Wisdom: ${sheet.stats.wisdom}<br>
+        Charisma: ${sheet.stats.charisma}<br>
+        <strong>Inventory:</strong> ${sheet.inventory.join(", ")}
+      `;
+      statsDiv.style.display = "block";
     }
   </script>
 </body>
