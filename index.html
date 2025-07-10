@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Uncial Antiqua', 'MedievalSharp', serif;
-      background: url('https://i.imgur.com/0Zz1bXG.jpg') no-repeat center center fixed;
+      background: url('https://i.pinimg.com/originals/95/61/7d/95617df735cb077e4963eacc026ad6b5.png') no-repeat center center fixed;
       background-size: cover;
       color: #2b261f;
       padding: 2rem;
@@ -32,14 +32,14 @@
       margin-bottom: 1rem;
     }
 
-    textarea {
+    textarea, select {
       width: 100%;
       font-size: 1rem;
       padding: 0.5rem;
-      resize: vertical;
+      margin-bottom: 0.5rem;
+      font-family: 'MedievalSharp', serif;
       border: 1px solid #8b5a2b;
       background-color: #fffaf0;
-      font-family: 'MedievalSharp', serif;
     }
 
     button {
@@ -79,6 +79,18 @@
       margin-top: 1rem;
       font-family: 'MedievalSharp', serif;
     }
+
+    .dice-animation {
+      animation: shake 0.6s ease-in-out;
+    }
+
+    @keyframes shake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(10deg); }
+      50% { transform: rotate(-10deg); }
+      75% { transform: rotate(5deg); }
+      100% { transform: rotate(0deg); }
+    }
   </style>
 </head>
 <body>
@@ -86,6 +98,15 @@
 
   <div class="input-container">
     <textarea id="prompt" placeholder="Type your action or leave blank to begin a new campaign..."></textarea>
+    <select id="diceType">
+      <option value="4">d4</option>
+      <option value="6">d6</option>
+      <option value="8">d8</option>
+      <option value="10">d10</option>
+      <option value="12">d12</option>
+      <option value="20" selected>d20</option>
+      <option value="100">d100</option>
+    </select>
     <button onclick="generate()">Start / Continue</button>
     <button onclick="rollDice()">🎲 Roll Dice</button>
     <button onclick="showStats()">📜 Show Character Sheet</button>
@@ -160,8 +181,13 @@ ${userInput ? `Player action: ${userInput}` : "Begin a new campaign in a haunted
     }
 
     function rollDice() {
-      const roll = Math.floor(Math.random() * 20) + 1;
-      document.getElementById("output").textContent += `\n\n🎲 You rolled a d20: ${roll}`;
+      const diceType = parseInt(document.getElementById("diceType").value);
+      const roll = Math.floor(Math.random() * diceType) + 1;
+      const output = document.getElementById("output");
+      output.classList.remove("dice-animation");
+      void output.offsetWidth; // trigger reflow
+      output.classList.add("dice-animation");
+      output.textContent += `\n\n🎲 You rolled a d${diceType}: ${roll}`;
     }
 
     function showStats() {
