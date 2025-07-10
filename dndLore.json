@@ -12,5 +12,21 @@
     "multiverse": true,
     "npcMemory": true,
     "consistencyMatters": true
+  },
+  "dungeonAtmosphere": {
+    "noises": ["Laughter", "Moaning", "Scratching", "Jingling", "Whispering"],
+    "smells": ["Dank", "Putrid", "Sulfurous", "Rotting vegetation"],
+    "air": ["Clear and damp", "Foggy and cold", "Smoky"]
+  },
+  "tricks": [
+    "Object ages the first person who touches it",
+    "Object asks three riddles and grants a reward if answered",
+    "Object swaps minds of two party members",
+    "Object bestows resistance or vulnerability"
+  ],
+  "monsters": {
+    "forest": ["Goblin", "Dryad", "Green Hag", "Owlbear"],
+    "swamp": ["Lizardfolk", "Will-o'-Wisp", "Shambling Mound"],
+    "underdark": ["Troglodyte", "Mind Flayer", "Roper"]
   }
 }
