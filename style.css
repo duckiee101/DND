@@ -1,0 +1,11 @@
+body {
+  font-family: 'Uncial Antiqua', 'MedievalSharp', serif;
+  background: url('images/parchment.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #2b261f;
+  padding: 2rem;
+}
+button:hover {
+  background-color: #a0522d;
+}
+@keyframes shake { ... }
