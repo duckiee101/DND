@@ -1,0 +1,13 @@
+{
+  "dmRoles": ["storyteller", "referee", "worldbuilder", "actor"],
+  "playerStyles": {
+    "acting": ["roleplay with NPCs", "use character voices"],
+    "exploring": ["discover clues", "interact with environments"],
+    "fighting": ["fast-paced combat", "surprise enemies"]
+  },
+  "worldBuilding": {
+    "multiverse": true,
+    "npcMemory": true,
+    "consistencyMatters": true
+  }
+}
