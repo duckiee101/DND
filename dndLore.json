@@ -3,7 +3,10 @@
   "playerStyles": {
     "acting": ["roleplay with NPCs", "use character voices"],
     "exploring": ["discover clues", "interact with environments"],
-    "fighting": ["fast-paced combat", "surprise enemies"]
+    "fighting": ["fast-paced combat", "surprise enemies"],
+    "optimizing": ["gain levels", "collect magic items"],
+    "problemSolving": ["solve puzzles", "analyze NPC motives"],
+    "storytelling": ["advance plot", "shape future events"]
   },
   "worldBuilding": {
     "multiverse": true,
